@@ -31,14 +31,14 @@ public class WavFileProcessor {
         System.out.println("Channels: " + format.getChannels());
         System.out.println("Encoding Type: " + encoding.toString());
 
-        return new ImmutablePair(convertAudioInputStreamToFloatArray(audioInputStream),format);
+        return new ImmutablePair(convertAudioInputStreamTodoubleArray(audioInputStream),format);
 
     }
 
     public static void writeWavFile(double[] amplifiedSignal, AudioFormat format, String outputFilePath) throws IOException {
         File outputFile = new File(outputFilePath);
         AudioInputStream audioInputStream2 = new AudioInputStream(
-                new ByteArrayInputStream(convertFloatArrayToByteArray24bit(amplifiedSignal)),
+                new ByteArrayInputStream(convertDoubleArrayToByteArray24bit(amplifiedSignal)),
                 format,
                 amplifiedSignal.length
         );
@@ -65,14 +65,14 @@ public class WavFileProcessor {
         System.out.println("Successfully read and wrote audio file.");
     }
 
-    private static byte[] convertFloatArrayToByteArray24bit(double[] floatArray) {
-        byte[] byteArray = new byte[floatArray.length * 3];
+    private static byte[] convertDoubleArrayToByteArray24bit(double[] doubleArray) {
+        byte[] byteArray = new byte[doubleArray.length * 3];
 
         ByteBuffer buffer = ByteBuffer.wrap(byteArray);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        for (int i = 0; i < floatArray.length; i++) {
-            int sample = (int) (floatArray[i] * 8388607.0);
+        for (int i = 0; i < doubleArray.length; i++) {
+            int sample = (int) (doubleArray[i] * 8388607.0);
             buffer.put((byte) (sample & 0xFF));
             buffer.put((byte) ((sample >> 8) & 0xFF));
             buffer.put((byte) ((sample >> 16) & 0xFF));
@@ -93,22 +93,22 @@ public class WavFileProcessor {
         return file;
     }
 
-    private static double[] convertAudioInputStreamToFloatArray(AudioInputStream audioInputStream) throws IOException {
+    private static double[] convertAudioInputStreamTodoubleArray(AudioInputStream audioInputStream) throws IOException {
         byte[] audioBytes = new byte[(int) (audioInputStream.getFrameLength() * audioInputStream.getFormat().getFrameSize())];
         audioInputStream.read(audioBytes);
 
-        return convertByteArrayToFloatArray24bit(audioBytes);
+        return convertByteArrayTodoubleArray24bit(audioBytes);
     }
 
-    private static double[] convertByteArrayToFloatArray24bit(byte[] audioBytes) {
-        double[] floatArray = new double[audioBytes.length / 3];
+    private static double[] convertByteArrayTodoubleArray24bit(byte[] audioBytes) {
+        double[] doubleArray = new double[audioBytes.length / 3];
 
         for (int i = 0, j = 0; i < audioBytes.length; i += 3, j++) {
             int sample = ((audioBytes[i] & 0xFF) | ((audioBytes[i + 1] & 0xFF) << 8) | ((audioBytes[i + 2] & 0xFF) << 16));
-            floatArray[j] = sample / 8388608.0f;
+            doubleArray[j] = sample / 8388608.0f;
         }
 
-        return floatArray;
+        return doubleArray;
     }
 
 }
