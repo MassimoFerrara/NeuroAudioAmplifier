@@ -31,7 +31,7 @@ public class WavFileProcessor {
         System.out.println("Channels: " + format.getChannels());
         System.out.println("Encoding Type: " + encoding.toString());
 
-        return new ImmutablePair(convertAudioInputStreamTodoubleArray(audioInputStream),format);
+        return new ImmutablePair(convertAudioInputStreamToDoubleArray(audioInputStream),format);
 
     }
 
@@ -93,14 +93,14 @@ public class WavFileProcessor {
         return file;
     }
 
-    private static double[] convertAudioInputStreamTodoubleArray(AudioInputStream audioInputStream) throws IOException {
+    private static double[] convertAudioInputStreamToDoubleArray(AudioInputStream audioInputStream) throws IOException {
         byte[] audioBytes = new byte[(int) (audioInputStream.getFrameLength() * audioInputStream.getFormat().getFrameSize())];
         audioInputStream.read(audioBytes);
 
-        return convertByteArrayTodoubleArray24bit(audioBytes);
+        return convertByteArrayToDoubleArray24bit(audioBytes);
     }
 
-    private static double[] convertByteArrayTodoubleArray24bit(byte[] audioBytes) {
+    private static double[] convertByteArrayToDoubleArray24bit(byte[] audioBytes) {
         double[] doubleArray = new double[audioBytes.length / 3];
 
         for (int i = 0, j = 0; i < audioBytes.length; i += 3, j++) {
